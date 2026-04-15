@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 from io import BytesIO
-from typing import Dict, List, Optional, Self, Union
+from typing import Dict, List, Optional, Self, Union, Any
 
 import colorgram
 import discord
@@ -211,9 +211,14 @@ class DiscordStreams(commands.Cog):
                 continue
 
             stream = DiscordStream(self.bot, member.voice.channel, member)
-            container_stream = await stream.make_container(start_time=ch_message.created_at)
+            container_stream: DiscordStream = await stream.make_container(
+                start_time=ch_message.created_at
+            )
 
-            if self.stream_info_is_equal(ch_message.components, container_stream.to_components()):
+            if self.stream_info_is_equal(
+                container_stream.from_message(ch_message).to_components(),
+                container_stream.to_components(),
+            ):
                 continue
 
             try:
@@ -223,7 +228,7 @@ class DiscordStreams(commands.Cog):
 
     @staticmethod
     def stream_info_is_equal(
-        old_components: list[discord.Component], new_components: list[discord.Component]
+        old_components: list[dict[str, Any]], new_components: list[dict[str, Any]]
     ) -> bool:
         return old_components == new_components
 
