@@ -212,7 +212,7 @@ class WikiArena(commands.Cog):
             )
         else:
             page = (
-                _("WikiArena Scoreboard\n" "Total players: {num_players}\n\n").format(
+                _("WikiArena Scoreboard\nTotal players: {num_players}\n\n").format(
                     num_players=len(scoreboard_dict)
                 )
                 + scoreboard

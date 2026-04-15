@@ -169,10 +169,7 @@ class AuctionHouse:
                     )
 
                 details_url = (
-                    f"https://oribos.exchange/#"
-                    f"{config_region}-"
-                    f"{config_realm}/"
-                    f"{found_item_id}"
+                    f"https://oribos.exchange/#{config_region}-{config_realm}/{found_item_id}"
                 )
                 view = discord.ui.View()
                 view.add_item(

@@ -117,9 +117,7 @@ class UserInstallableAuctionHouse:
                     inline=False,
                 )
 
-            details_url = (
-                f"https://oribos.exchange/#" f"{region}-" f"{config_realm}/" f"{found_item_id}"
-            )
+            details_url = f"https://oribos.exchange/#{region}-{config_realm}/{found_item_id}"
             view = discord.ui.View()
             view.add_item(
                 discord.ui.Button(

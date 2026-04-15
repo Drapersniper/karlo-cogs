@@ -160,7 +160,7 @@ class WarcraftLogsRetail(commands.Cog):
         char_data = await self.http.get_gear(name, realm, region, encounters["latest"])
         if not char_data:
             return await ctx.send(
-                _("Check your API token and make sure you " "have added it to the bot correctly.")
+                _("Check your API token and make sure you have added it to the bot correctly.")
             )
         gear = None
 
