@@ -30,6 +30,7 @@ class DiscordStreams(commands.Cog):
             "mentions": [],
         }
         self.config.register_guild(**default_guild)
+        self.message_cache: dict[int, discord.Message] = {}
         self.update_stream_messages.start()
 
     @commands.command()
@@ -190,18 +191,22 @@ class DiscordStreams(commands.Cog):
                 continue
 
             message_id = message_info["message"]
-            try:
-                ch_message: discord.Message = await channel.fetch_message(message_id)
-            except discord.NotFound:
-                log.error(f"Message {message_id} not found in channel {channel_id}, skipping.")
-                await self.config.guild(guild).active_messages.clear_raw(member.id)
-                continue
-            except discord.HTTPException:
-                log.error(
-                    f"Error fetching message {message_id} in {channel_id}, skipping.",
-                    exc_info=True,
-                )
-                continue
+            if self.message_cache.get(message_id, None):
+                ch_message = self.message_cache[message_id]
+            else:
+                try:
+                    ch_message: discord.Message = await channel.fetch_message(message_id)
+                    self.message_cache[ch_message.id] = ch_message
+                except discord.NotFound:
+                    log.error(f"Message {message_id} not found in channel {channel_id}, skipping.")
+                    await self.config.guild(guild).active_messages.clear_raw(member.id)
+                    continue
+                except discord.HTTPException:
+                    log.error(
+                        f"Error fetching message {message_id} in {channel_id}, skipping.",
+                        exc_info=True,
+                    )
+                    continue
             if member.voice is None:
                 continue
 
@@ -296,8 +301,16 @@ class DiscordStreams(commands.Cog):
                 message: discord.Message = await channel.fetch_message(message_id)
                 await message.delete()
                 active_messages[member_id].pop(str(channel_id))
+                try:
+                    self.message_cache.pop(message_id)
+                except KeyError:
+                    pass
             except discord.NotFound:  # Message was already deleted
                 active_messages[member_id].pop(str(channel_id))
+                try:
+                    self.message_cache.pop(message_id)
+                except KeyError:
+                    pass
 
             if not active_messages[member_id]:
                 # No more active messages for this member
@@ -351,6 +364,7 @@ class DiscordStreams(commands.Cog):
                 # content=content,
                 view=view,
             )
+            self.message_cache[message.id] = message
 
             member_id = str(member.id)
             channel_id = str(channel_id)
