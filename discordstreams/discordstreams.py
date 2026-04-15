@@ -208,10 +208,21 @@ class DiscordStreams(commands.Cog):
             stream = DiscordStream(self.bot, member.voice.channel, member)
             container_stream = await stream.make_container(start_time=ch_message.created_at)
 
+            if self.stream_info_is_equal(
+                ch_message.components, await container_stream.to_components()
+            ):
+                continue
+
             try:
                 await ch_message.edit(view=container_stream)
             except discord.NotFound:
                 log.warning(f"Message {message_id} not found in channel {channel_id}, skipping.")
+
+    @staticmethod
+    def stream_info_is_equal(
+        old_components: list[discord.Component], new_components: list[discord.Component]
+    ) -> bool:
+        return old_components == new_components
 
     @commands.Cog.listener("on_voice_state_update")
     async def on_voice_state_update(
