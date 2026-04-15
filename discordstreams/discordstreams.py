@@ -222,7 +222,7 @@ class DiscordStreams(commands.Cog):
                 continue
 
             try:
-                await ch_message.edit(view=container_stream)
+                self.message_cache[ch_message.id] = await ch_message.edit(view=container_stream)
             except discord.NotFound:
                 log.warning(f"Message {message_id} not found in channel {channel_id}, skipping.")
 
