@@ -213,9 +213,7 @@ class DiscordStreams(commands.Cog):
             stream = DiscordStream(self.bot, member.voice.channel, member)
             container_stream = await stream.make_container(start_time=ch_message.created_at)
 
-            if self.stream_info_is_equal(
-                ch_message.components, await container_stream.to_components()
-            ):
+            if self.stream_info_is_equal(ch_message.components, container_stream.to_components()):
                 continue
 
             try:
