@@ -480,7 +480,7 @@ class DiscordStream(discord.ui.LayoutView):
     async def make_container(self, start_time: Optional[datetime] = None) -> Self:
         member = self.member
         voice_channel = self.voice_channel
-        self.banner: Optional[discord.Asset] = (await self.bot.fetch_user(member.id)).banner
+        # self.banner: Optional[discord.Asset] = (await self.bot.fetch_user(member.id)).banner
         activity = self.get_activity()
 
         stream_started: str = _("Stream started {relative_timestamp}").format(
