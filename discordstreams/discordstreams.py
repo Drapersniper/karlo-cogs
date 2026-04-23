@@ -226,11 +226,17 @@ class DiscordStreams(commands.Cog):
             except discord.NotFound:
                 log.warning(f"Message {message_id} not found in channel {channel_id}, skipping.")
 
-    @staticmethod
     def stream_info_is_equal(
-        old_components: list[dict[str, Any]], new_components: list[dict[str, Any]]
+        self, old_components: list[dict[str, Any]], new_components: list[dict[str, Any]]
     ) -> bool:
-        return old_components == new_components
+        return self.remove_id(old_components) == self.remove_id(new_components)
+
+    def remove_id(self, components: Any) -> Any:
+        if isinstance(components, list):
+            return [self.remove_id(component) for component in components]
+        elif isinstance(components, dict):
+            return {k: self.remove_id(v) for k, v in components.items() if k != "id"}
+        return components
 
     @commands.Cog.listener("on_voice_state_update")
     async def on_voice_state_update(
