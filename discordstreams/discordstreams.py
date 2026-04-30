@@ -523,7 +523,7 @@ class DiscordStream(discord.ui.LayoutView):
                 ),
                 discord.ui.Section(
                     discord.ui.TextDisplay(
-                        content=_("{activity}\n{details}\n{state}").format(
+                        content=_("**{activity}**\n{details}\n{state}").format(
                             activity=activity.name,
                             details=activity.details if activity.details else "",
                             state=activity.state if activity.state else "",
