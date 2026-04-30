@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 from io import BytesIO
-from typing import Dict, List, Optional, Self, Union, Any
+from typing import Any, Dict, List, Optional, Self, Union
 
 import colorgram
 import discord
@@ -493,25 +493,50 @@ class DiscordStream(discord.ui.LayoutView):
             )
         )
 
-        container = discord.ui.Container(
-            discord.ui.Section(
-                discord.ui.TextDisplay(
-                    content=f"## {member.display_name}\n\n{voice_channel.mention}\n{stream_started}"
+        if not (activity.details or activity.state):
+            container = discord.ui.Container(
+                discord.ui.Section(
+                    discord.ui.TextDisplay(
+                        content=f"## {member.display_name}\n\n{voice_channel.mention}\n{stream_started}"
+                    ),
+                    accessory=discord.ui.Thumbnail(media=self.get_member_avatar().url),
                 ),
-                accessory=discord.ui.Thumbnail(media=self.get_member_avatar().url),
-            ),
-            discord.ui.Section(
-                discord.ui.TextDisplay(
-                    content=_("Playing: {activity}").format(activity=activity.name)
+                discord.ui.Section(
+                    discord.ui.TextDisplay(
+                        content=_("Playing: {activity}").format(activity=activity.name)
+                    ),
+                    accessory=discord.ui.Button(
+                        label=_("Watch the stream"),
+                        style=discord.ButtonStyle.link,
+                        url=voice_channel.jump_url,
+                    ),
                 ),
-                accessory=discord.ui.Button(
-                    label=_("Watch the stream"),
-                    style=discord.ButtonStyle.link,
-                    url=voice_channel.jump_url,
+                accent_color=await self.get_embed_color(),
+            )
+        else:
+            container = discord.ui.Container(
+                discord.ui.Section(
+                    discord.ui.TextDisplay(
+                        content=f"## {member.display_name}\n\n{voice_channel.mention}\n{stream_started}"
+                    ),
+                    accessory=discord.ui.Thumbnail(media=self.get_member_avatar().url),
                 ),
-            ),
-            accent_color=await self.get_embed_color(),
-        )
+                discord.ui.Section(
+                    discord.ui.TextDisplay(
+                        content=_("{activity}\n{details}\n{state}").format(
+                            activity=activity.name,
+                            details=activity.details if activity.details else "",
+                            state=activity.state if activity.state else "",
+                        )
+                    ),
+                    accessory=discord.ui.Button(
+                        label=_("Watch the stream"),
+                        style=discord.ButtonStyle.link,
+                        url=voice_channel.jump_url,
+                    ),
+                ),
+                accent_color=await self.get_embed_color(),
+            )
         self.add_item(container)
         return self
 
